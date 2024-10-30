@@ -1,0 +1,59 @@
+#
+# https://github.com/P3TERX/Actions-OpenWrt
+#
+# File: .github/workflows/update-checker.yml
+# Description: Source code update checker
+#
+# Copyright (c) 2019-2024 P3TERX <https://p3terx.com>
+#
+# This is free software, licensed under the MIT License.
+# See /LICENSE for more information.
+#
+
+name: 定时更新
+
+env:
+  REPO_URL: https://github.com/openwrt/openwrt
+  REPO_BRANCH: master
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: 0 1 * * 1,5
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: 获取哈希值
+      id: getHash
+      run: |
+        git clone --depth 1 $REPO_URL -b $REPO_BRANCH .
+        echo "commitHash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+
+    - name: 比较哈希值
+      id: cacheHash
+      uses: actions/cache@v3
+      with:
+        path: .commitHash
+        key: commitHash_${{ steps.getHash.outputs.commitHash }}
+
+    - name: 保存新的哈希值
+      if: steps.cacheHash.outputs.cache-hit != 'true'
+      run: |
+        echo ${{ steps.getHash.outputs.commitHash }} | tee .commitHash
+
+    - name: 触发编译
+      if: steps.cacheHash.outputs.cache-hit != 'true'
+      uses: peter-evans/repository-dispatch@v2
+      with:
+        token: ${{ secrets.TOKEN_OPPEN321 }}
+        event-type: 定时编译
+
+    - name: 删除工作流程运行
+      uses: Mattraks/delete-workflow-runs@v2
+      with:
+        retain_days: 0
+        keep_minimum_runs: 2
