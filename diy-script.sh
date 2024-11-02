@@ -33,7 +33,7 @@ function git_sparse_clone() {
 git clone https://github.com/sbwml/packages_lang_golang -b 23.x feeds/packages/lang/golang
 
 # 添加额外插件
-git clone --depth=1 https://github.com/kongfl888/luci-app-adguardhome package/luci-app-adguardhome
+git_sparse_clone master https://github.com/kenzok8/openwrt-packages luci-app-adguardhome adguardhome
 git clone --depth=1 https://github.com/tty228/luci-app-wechatpush package/luci-app-serverchan
 git clone --depth=1 https://github.com/ilxp/luci-app-ikoolproxy package/luci-app-ikoolproxy
 git clone --depth=1 https://github.com/destan19/OpenAppFilter package/OpenAppFilter
