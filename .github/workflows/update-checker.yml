@@ -14,7 +14,7 @@ name: 定时更新
 
 env:
   REPO_URL: https://github.com/openwrt/openwrt
-  REPO_BRANCH: master
+  REPO_BRANCH: openwrt-23.05
 
 on:
   repository_dispatch:
